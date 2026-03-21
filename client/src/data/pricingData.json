@@ -16,10 +16,10 @@
       "sortOrder": 1,
       "description": "For small RAG apps & testing",
       "features": [
-        "Basic vector search",
-        "Limited document upload",
-        "Standard response speed",
-        "Community support"
+        "Basic vector search.",
+        "Limited document upload.",
+        "Standard response speed.",
+        "Community support."
       ],
       "limits": {
         "documents": 100,
