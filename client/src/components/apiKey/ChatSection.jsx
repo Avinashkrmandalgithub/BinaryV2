@@ -1,5 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 import ApiKeyModal from "./ApiKeyModal.jsx";
+import { connectSocket, socket } from "../../socket/socket.js";
 
 const ChatSection = ({ externalApiKey = null }) => {
   const [messages, setMessages] = useState([]);
@@ -14,6 +15,37 @@ const ChatSection = ({ externalApiKey = null }) => {
     bottomRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [messages, loading]);
 
+  useEffect(() => {
+    const userId = localStorage.getItem("userId");
+    connectSocket(userId);
+
+    const handleReceiveMessage = (payload) => {
+      const responsePayload = payload?.response;
+      const botText =
+        responsePayload?.response ||
+        responsePayload?.message ||
+        (typeof responsePayload === "string"
+          ? responsePayload
+          : JSON.stringify(responsePayload || {}));
+
+      setMessages((prev) => [
+        ...prev,
+        {
+          role: "bot",
+          text: botText || "No response",
+        },
+      ]);
+
+      setLoading(false);
+    };
+
+    socket.on("receive-message", handleReceiveMessage);
+
+    return () => {
+      socket.off("receive-message", handleReceiveMessage);
+    };
+  }, []);
+
   const sendMessage = async () => {
     if (!input.trim() || !apiKey) return;
 
@@ -24,7 +56,7 @@ const ChatSection = ({ externalApiKey = null }) => {
     setLoading(true);
 
     try {
-      const res = await fetch("http://localhost:8080/api/v2/messages/query", {
+      const res = await fetch(`${import.meta.env.VITE_SOCKET_SERVER_URL}/api/message/query`, {
         method: "POST",
         headers: {
           "Content-Type": "application/json",
@@ -33,15 +65,10 @@ const ChatSection = ({ externalApiKey = null }) => {
         body: JSON.stringify({ query: input }),
       });
 
-      const data = await res.json();
-
-      setMessages((prev) => [
-        ...prev,
-        {
-          role: "bot",
-          text: data.response || "No response",
-        },
-      ]);
+      if (!res.ok) {
+        const errorData = await res.json().catch(() => ({}));
+        throw new Error(errorData?.message || "Request failed");
+      }
     } catch (err) {
       setMessages((prev) => [
         ...prev,
@@ -50,9 +77,8 @@ const ChatSection = ({ externalApiKey = null }) => {
           text: "⚠️ Error fetching response",
         },
       ]);
+      setLoading(false);
     }
-
-    setLoading(false);
   };
 
   return (

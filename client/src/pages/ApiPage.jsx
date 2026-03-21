@@ -2,9 +2,34 @@ import React, { useState } from "react";
 import UploadDocs from "../components/apiKey/UploadDocs.jsx";
 import ApiKeyCard from "../components/apiKey/ApiKeyCard.jsx";
 import { useNavigate } from "react-router-dom";
+import { useEffect } from "react";
+import axios from "axios";
 
 const ApiPage = () => {
-  const [apiKey] = useState("sk-rag-user-demo-key");
+  const [apiKey, setApiKey] = useState("sk-rag-user-demo-key");
+
+  useEffect(() => {
+    const fetchApiKey = async () => {
+      try {
+        const token = localStorage.getItem("token");
+        if (!token) {
+          console.warn("No token found, using demo API key");
+          return;
+        }
+        const response = await axios.get(`${import.meta.env.VITE_JAVA_URL}/auth/api-key`, {
+          headers: {
+            Authorization: `Bearer ${token}`,
+          },
+        });
+        setApiKey(response.data.apiKey);
+
+      }catch (error) {
+        console.error("Failed to fetch API key:", error);
+      }
+    }
+    fetchApiKey();
+  }, [])
+  
 
   const [documents, setDocuments] = useState([]);
   const navigate = useNavigate();

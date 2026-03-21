@@ -4,7 +4,7 @@ import { ApiError } from "../utils/apiError.js";
 import { data } from "../cache/data.js";
 import axios from "axios";
 
-const javaURL = "http://localhost:8080/api/v2"
+const javaURL = process.env.JAVA_URL || "http://localhost:8080/api/v2";
 const sendMessage = asyncHandler(async (req, res) => {
     const apiKey = req.headers["x-api-key"];
     const { query } = req.body;
@@ -22,10 +22,10 @@ const sendMessage = asyncHandler(async (req, res) => {
         throw new ApiError(400, "User is not connected")
     }
 
+    console.log({javaURL})
+
     const response = await axios.post(`${javaURL}/messages/query`,
-        {
-            query: query
-        },
+        {query: query},
         {
             headers: {
                 "x-api-key": apiKey
