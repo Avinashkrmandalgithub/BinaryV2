@@ -1,30 +1,34 @@
 import React, { useState } from "react";
 import axios from "axios";
 
-const UploadUrl = ({ onUploadSuccess, apiKey }) => {
+const UploadUrl = ({ onUploadSuccess }) => {
   const [url, setUrl] = useState("");
   const [loading, setLoading] = useState(false);
 
   const handleSubmit = async () => {
-    if (!url) return alert("Enter a valid URL");
+    const trimmedUrl = url.trim();
+    if (!trimmedUrl) return alert("Enter a valid URL");
+    const token = localStorage.getItem("token");
+    if (!token) {
+      alert("Login required. Token not found.");
+      return;
+    }
 
     setLoading(true);
 
-    const token = localStorage.getItem("token");
-
     try {
       await axios.post(
-        `${import.meta.env.VITE_JAVA_URL}/uploadData/url`,
-        { url },
+        `${import.meta.env.VITE_JAVA_URL}/uploadData/upload-web-url`,
+        { url: trimmedUrl },
         {
           headers: {
-            ...(token ? { Authorization: `Bearer ${token}` } : {}),
-            ...(apiKey ? { "x-api-key": apiKey } : {}),
+            Authorization: `Bearer ${token}`,
+            "Content-Type": "application/json",
           },
         },
       );
 
-      onUploadSuccess({ name: url, type: "url" });
+      onUploadSuccess({ name: trimmedUrl, type: "url" });
       setUrl("");
     } catch (error) {
       console.error("URL upload failed:", error);

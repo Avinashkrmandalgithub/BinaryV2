@@ -1,16 +1,14 @@
 package com.mainServer.main_server.controller;
 
 import com.mainServer.main_server.dto.request.DocumentDataRequestDto;
+import com.mainServer.main_server.dto.request.URLRequestDto;
 import com.mainServer.main_server.service.DocumentDataService;
 import jakarta.validation.Valid;
 import lombok.AllArgsConstructor;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.ModelAttribute;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.io.IOException;
 import java.util.Map;
@@ -28,5 +26,11 @@ public class DocumentDataController {
     )
     public ResponseEntity<Map<String, Object>> uploadDocumentData(@Valid @ModelAttribute DocumentDataRequestDto dataRequestDto) throws IOException {
         return ResponseEntity.status(HttpStatus.ACCEPTED).body(documentDataService.uploadDocumentData(dataRequestDto));
+    }
+
+    @PostMapping("/upload-web-url")
+    public ResponseEntity<Map<String, Object>> uploadWebURL(@RequestBody URLRequestDto webURLRequest) {
+        return ResponseEntity.status(HttpStatus.ACCEPTED).body(documentDataService.uploadWebURL(webURLRequest));
+
     }
 }
