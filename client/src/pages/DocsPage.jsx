@@ -2,7 +2,7 @@ import React from "react";
 import CodeBlock from "../components/docs/CodeBlock.jsx";
 
 const DocsPage = () => {
-  const curlCode = `curl "http://localhost:8080/api/v2/messages/query" \\
+  const curlCode = `curl "${import.meta.env.VITE_JAVA_URL}/messages/query" \\
   -H "x-api-key: YOUR_SECRET_KEY" \\
   -H "Content-Type: application/json" \\
   -X POST \\
@@ -10,7 +10,7 @@ const DocsPage = () => {
     "query": "Explain how AI works in a few words"
   }'`;
 
-  const jsonCode = `POST http://localhost:8080/api/v2/messages/query
+  const jsonCode = `POST ${import.meta.env.VITE_JAVA_URL}/messages/query
 
 Headers:
   x-api-key: YOUR_SECRET_KEY
@@ -57,7 +57,7 @@ Body:
           <h2 className="text-xl font-semibold mb-3">🌐 Endpoint</h2>
 
           <div className="bg-white/5 backdrop-blur-lg border border-white/10 rounded-xl p-4 text-sm text-gray-300">
-            POST http://localhost:8080/api/v2/messages/query
+            POST {import.meta.env.VITE_JAVA_URL}/messages/query
           </div>
         </div>
 

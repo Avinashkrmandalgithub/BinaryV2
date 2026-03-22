@@ -32,4 +32,9 @@ public class UserController {
     ResponseEntity<PlanChangeResponseDto> changePlan(@RequestBody PlanChangeRequestDto planChangeRequestDto) {
         return ResponseEntity.status(HttpStatus.OK).body(userService.changePlan(planChangeRequestDto));
     }
+
+    @GetMapping("/plan-info")
+    ResponseEntity<Map<String,Object>> userPlanInfo(){
+        return ResponseEntity.status(HttpStatus.OK).body(userService.userPlanInfo());
+    }
 }

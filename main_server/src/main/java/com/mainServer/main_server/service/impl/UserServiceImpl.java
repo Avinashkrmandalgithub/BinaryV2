@@ -108,7 +108,7 @@ public class UserServiceImpl implements UserService {
         return CurrentUserDto.builder()
                 .userId(user.getId())
                 .email(user.getEmail())
-                .name(user.getId())
+                .name(user.getName())
                 .avatar(user.getAvatar())
                 .build();
     }
@@ -127,5 +127,15 @@ public class UserServiceImpl implements UserService {
                 .email(user.getEmail())
                 .name(user.getName())
                 .build();
+    }
+
+    @Override
+    public Map<String, Object> userPlanInfo() {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        return Map.of(
+                "payment", user.getPayment()
+        );
     }
 }

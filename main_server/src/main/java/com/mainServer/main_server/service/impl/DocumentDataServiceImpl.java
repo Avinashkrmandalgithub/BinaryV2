@@ -1,6 +1,7 @@
 package com.mainServer.main_server.service.impl;
 
 import com.mainServer.main_server.dto.request.DocumentDataRequestDto;
+import com.mainServer.main_server.dto.request.URLRequestDto;
 import com.mainServer.main_server.entity.DocumentData;
 import com.mainServer.main_server.entity.User;
 import com.mainServer.main_server.repository.DocumentDataRepository;
@@ -52,5 +53,22 @@ public class DocumentDataServiceImpl implements DocumentDataService {
         Map <String, Object> chunkingResponse = chunkingInRAG.startChunking(user.getId());
 
         return Map.of("message", "File uploaded successfully");
+    }
+
+    @Override
+    public Map<String, Object> uploadWebURL(URLRequestDto webURLRequest) {
+        Authentication auth = SecurityContextHolder.getContext().getAuthentication();
+        User user = (User) auth.getPrincipal();
+
+        Map<String, Object> datas;
+        if(webURLRequest.getUrl() == null){
+            throw new RuntimeException("File is required");
+        }
+
+        Map<String, Object> response = uploadInRAG.uploadURLInRAG(webURLRequest.getUrl(), user.getId());
+
+        Map <String, Object> chunkingResponse = chunkingInRAG.startChunking(user.getId());
+
+        return Map.of("message", "URL uploaded successfully");
     }
 }

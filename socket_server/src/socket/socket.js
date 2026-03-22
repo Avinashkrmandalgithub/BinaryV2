@@ -16,7 +16,10 @@ app.set("io", io);
 io.on("connection", (socket) => {
   const userId = socket.handshake.auth.userId;
 
-  if (!userId) return;
+  if (!userId) {
+    socket.disconnect(true);
+    return;
+  }
 
   socket.join(userId);
   data.set("userId", userId);

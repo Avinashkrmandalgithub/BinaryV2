@@ -1,12 +1,14 @@
 import React, { useState, useEffect, useRef } from "react";
 import { Link, useNavigate } from "react-router-dom";
+import { useIsLogin } from "../contexts/isLoginContext";
 
 const Navbar = () => {
   const navigate = useNavigate();
-  const [user, setUser] = useState(null);
   const [menuOpen, setMenuOpen] = useState(false);
 
   const menuRef = useRef();
+
+  const { isLogin } = useIsLogin();
 
   useEffect(() => {
     const handleClickOutside = (e) => {
@@ -20,12 +22,11 @@ const Navbar = () => {
   }, []);
 
   const handleLogin = () => {
-    setUser({ name: "User" });
-    setMenuOpen(false);
+    window.location.href = `${import.meta.env.VITE_JAVA_URL}/oauth2/authorization/google`;
   };
 
   const handleGetApiKey = () => {
-    if (!user) {
+    if (!isLogin?.isLogin) {
       alert("Please login first!");
       return;
     }
@@ -75,7 +76,7 @@ const Navbar = () => {
 
           {/* Desktop Right */}
           <div className="hidden md:flex items-center gap-4">
-            {!user ? (
+            {!isLogin?.isLogin ? (
               <button
                 onClick={handleLogin}
                 className="flex items-center gap-2 bg-[#a3c8d8] text-black px-4 py-2 rounded-lg text-sm hover:bg-gray-200 transition"
@@ -106,7 +107,7 @@ const Navbar = () => {
                 Sign in with Google
               </button>
             ) : (
-              <span className="text-sm text-gray-300">{user.name}</span>
+              <span className="text-sm text-gray-300">{isLogin?.user?.name}</span>
             )}
 
             <button
@@ -150,7 +151,7 @@ const Navbar = () => {
               Playground
             </Link>
 
-            {!user ? (
+            {!isLogin?.isLogin ? (
               <button
                 onClick={handleLogin}
                 className="bg-gray-800 text-white px-4 py-2 rounded-lg text-sm"
@@ -158,7 +159,7 @@ const Navbar = () => {
                 Sign in
               </button>
             ) : (
-              <span className="text-gray-300">{user.name}</span>
+              <span className="text-gray-300">{isLogin?.user?.name}</span>
             )}
 
             <button

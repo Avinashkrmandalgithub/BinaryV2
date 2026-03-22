@@ -1,4 +1,5 @@
 import React, { useState } from "react";
+import axios from "axios";
 
 const UploadDocs = ({ onUploadSuccess, apiKey }) => {
   const [file, setFile] = useState(null);
@@ -19,23 +20,31 @@ const UploadDocs = ({ onUploadSuccess, apiKey }) => {
     setLoading(true);
     setProgress(0);
 
-    //  Replace with REAL API later
-    const interval = setInterval(() => {
-      setProgress((prev) => {
-        if (prev >= 100) {
-          clearInterval(interval);
+    const token = localStorage.getItem("token");
+    const formData = new FormData();
+    formData.append("file", file);
 
-          // ONLY SEND FILE (NOT API KEY)
-          onUploadSuccess(file);
-
-          setFile(null);
-          setLoading(false);
-
-          return 100;
-        }
-        return prev + 10;
+    try {
+      await axios.post(`${import.meta.env.VITE_JAVA_URL}/uploadData/upload`, formData, {
+        headers: {
+          ...(token ? { Authorization: `Bearer ${token}` } : {}),
+        },
+        onUploadProgress: (event) => {
+          if (!event.total) return;
+          const percent = Math.round((event.loaded * 100) / event.total);
+          setProgress(percent);
+        },
       });
-    }, 120);
+
+      setProgress(100);
+      onUploadSuccess(file);
+      setFile(null);
+    } catch (error) {
+      console.error("Upload failed:", error);
+      alert("Upload failed. Please try again.");
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (
