@@ -76,9 +76,9 @@ const App = () => {
       setLoading(true);
 
       try {
+        await axios.get(`${import.meta.env.VITE_PYTHON_SERVER_URL}`)
         await Promise.all([
           axios.get(`${import.meta.env.VITE_SOCKET_SERVER_URL}`),
-          axios.get(`${import.meta.env.VITE_PYTHON_SERVER_URL}`),
           axios.get(`${import.meta.env.VITE_JAVA_URL}/api/v2/`),
         ]);
       } catch (error) {
