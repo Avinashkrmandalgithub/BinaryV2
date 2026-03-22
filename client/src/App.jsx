@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React, { useEffect, useState } from "react";
 import axios from "axios";
 import { Route, Routes } from "react-router-dom";
 import Layout from "./Layout/Layout.jsx";
@@ -8,9 +8,12 @@ import Pricing from "./pages/Pricing.jsx";
 import TryPage from "./pages/TryPage.jsx";
 import { useIsLogin } from "./contexts/isLoginContext.jsx";
 import { connectSocket, disconnectSocket } from "./socket/socket.js";
+import LoadingScreen from "./components/LoadingScreen.jsx";
+import AdvancedLoadingScreen from "./components/AdvancedLoadingScreen.jsx";
 
 const App = () => {
   const { setIsLogin } = useIsLogin();
+  const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     const validateCurrentUser = async () => {
@@ -19,7 +22,11 @@ const App = () => {
 
       if (tokenFromQuery) {
         localStorage.setItem("token", tokenFromQuery);
-        window.history.replaceState({}, document.title, window.location.pathname);
+        window.history.replaceState(
+          {},
+          document.title,
+          window.location.pathname,
+        );
       }
 
       const token = tokenFromQuery || localStorage.getItem("token");
@@ -39,7 +46,7 @@ const App = () => {
             headers: {
               Authorization: `Bearer ${token}`,
             },
-          }
+          },
         );
 
         if (response?.data) {
@@ -63,6 +70,10 @@ const App = () => {
 
     validateCurrentUser();
   }, [setIsLogin]);
+
+  if (loading) {
+    return <AdvancedLoadingScreen />;
+  }
 
   return (
     <Routes>
