@@ -1,13 +1,14 @@
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import UploadDocs from "../components/apiKey/UploadDocs.jsx";
 import ApiKeyCard from "../components/apiKey/ApiKeyCard.jsx";
 import UploadUrl from "../components/apiKey/UploadUrl.jsx";
 import { useNavigate } from "react-router-dom";
-import { useEffect } from "react";
 import axios from "axios";
 
 const ApiPage = () => {
   const [apiKey, setApiKey] = useState("sk-rag-user-demo-key");
+  const [documents, setDocuments] = useState([]);
+  const navigate = useNavigate();
 
   useEffect(() => {
     const fetchApiKey = async () => {
@@ -17,6 +18,7 @@ const ApiPage = () => {
           console.warn("No token found, using demo API key");
           return;
         }
+
         const response = await axios.get(
           `${import.meta.env.VITE_JAVA_URL}/auth/api-key`,
           {
@@ -25,16 +27,15 @@ const ApiPage = () => {
             },
           },
         );
+
         setApiKey(response.data.apiKey);
       } catch (error) {
         console.error("Failed to fetch API key:", error);
       }
     };
+
     fetchApiKey();
   }, []);
-
-  const [documents, setDocuments] = useState([]);
-  const navigate = useNavigate();
 
   const handleUploadSuccess = (item) => {
     setDocuments((prev) => [
@@ -61,8 +62,12 @@ const ApiPage = () => {
         <UploadDocs apiKey={apiKey} onUploadSuccess={handleUploadSuccess} />
         <UploadUrl apiKey={apiKey} onUploadSuccess={handleUploadSuccess} />
 
-        {/* API Key */}
-        <ApiKeyCard apiKey={apiKey} />
+        {/*  Centered API Key */}
+        <div className="flex justify-center">
+          <div className="w-full sm:w-125 md:w-150">
+            <ApiKeyCard apiKey={apiKey} />
+          </div>
+        </div>
 
         {/* Actions */}
         <div className="flex flex-col sm:flex-row gap-4">
